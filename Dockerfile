@@ -10,9 +10,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     make \
     procps \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && JAVA_HOME=$(readlink -f /usr/bin/java | sed 's|/bin/java||') \
+    && ln -sfn "$JAVA_HOME" /usr/lib/jvm/java-17-openjdk-docker
 
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+# amd64 vs arm64 images use different paths (e.g. ...-amd64 vs ...-arm64); resolve at build time.
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-docker
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Install Spark 
